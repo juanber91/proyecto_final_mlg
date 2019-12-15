@@ -12,8 +12,8 @@ vars <- c("estado", "AÑO", "tasa", "MES", "TAX", "m_arma_de_fuego", "m_decapita
 
 base <- base %>% select(vars)
 
-estados <- base %>% select(estado) %>% unique() %>% as.character()
-mes <- base %>% select(MES) %>% unique() %>% as.character()
+estados <- base %>% select(estado) %>% unique() %>% as_vector()
+mes <- base %>% select(MES) %>% unique() %>% as_vector()
 
 for (i in estados){
   for (j in mes){
