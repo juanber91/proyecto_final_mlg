@@ -17,7 +17,7 @@ mes <- base %>% select(MES) %>% unique() %>% as.character()
 
 for (i in estados){
   for (j in mes){
-    for (anio in seq(2006, 2011)){
+    for (anio in seq(2007, 2011)){
       sub <- base %>% filter(MES == j & estado == i & AÑO == anio)
       if (dim(sub)[1] == 0) {
         reg <- base[1,]
@@ -26,7 +26,7 @@ for (i in estados){
         reg$tasa <- 0
         reg$MES <- j
         reg[,5:15] <- 0
-        sub <- rbind(base, reg)
+        base <- rbind(base, reg)
       }
     }
   }
