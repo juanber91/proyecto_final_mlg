@@ -1,0 +1,37 @@
+model {
+  
+  #Likelihood
+  for (i in 1:n) {
+    tasa[i] ~ dgamma(a,b[i])
+    b[i] <- a/mu[i]
+    
+    log(mu[i]) <- 
+          beta[1] +
+          beta[2]  * TAX[i]  +
+          beta[3]  * m_arma_de_fuego[i] +
+          beta[4]  * m_decapitado[i] +
+          beta[5]  * m_mutilado[i] +
+          beta[6]  * mens_narco[i] +
+          beta[7]  * cartel_juarez[i] +
+          beta[8]  * cartel_beltranleyva[i] +
+          beta[9]  * cartel_sinaloa[i] +
+          beta[10] * cartel_familia_michoacana[i] +
+          beta[11] * cartel_zetas[i] +
+          beta[12] * cartel_otro[i] +
+          gamma[estado[i]] +
+          delta[anio[i]] 
+  }
+  
+  # Priors
+  a~dgamma(0.1,0.1)
+  
+  #beta[1] ~ dnorm(0, 0.001) 
+  for (i in 1:12) { beta[i] ~ dnorm(0, 0.001)  }
+  for (i in 1:32) { gamma[i] ~ dnorm(0, 0.001) }
+  for (i in 1:5)  { delta[i] ~ dnorm(0, 0.001) }
+
+for (i in 1:n) {
+    yf[i] ~ dgamma(a,b[i])
+    }
+  
+}
