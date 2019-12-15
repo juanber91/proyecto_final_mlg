@@ -12,4 +12,24 @@ vars <- c("estado", "AÑO", "tasa", "MES", "TAX", "m_arma_de_fuego", "m_decapita
 
 base <- base %>% select(vars)
 
+estados <- base %>% select(estado) %>% unique() %>% as.character()
+mes <- base %>% select(MES) %>% unique() %>% as.character()
+
+for (i in estados){
+  for (j in mes){
+    for (anio in seq(2006, 2011)){
+      sub <- base %>% filter(MES == j & estado == i & AÑO == anio)
+      if (dim(sub)[1] == 0) {
+        reg <- base[1,]
+        reg$AÑO <- anio
+        reg$estado <- i
+        reg$tasa <- 0
+        reg$MES <- j
+        reg[,5:15] <- 0
+        sub <- rbind(base, reg)
+      }
+    }
+  }
+}
+
 base %>% write.csv("narco_modelo.csv")
