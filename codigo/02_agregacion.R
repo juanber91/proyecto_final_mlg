@@ -67,7 +67,7 @@ plot_estados <- function(df, variable) {
     theme_light() +
     theme(legend.position = 'none')
   
-  ggsave(paste0('Final/proyecto_final_mlg/plots/',
+  ggsave(paste0('plots/',
                 variable, '.png'),
          width = 6, height = 4)
   
@@ -77,10 +77,17 @@ map(names(estados)[-c(1,2)], ~plot_estados(estados, .))
 
 narco_mensual %>% 
   mutate(fecha = as.Date(paste(AÑO, str_pad(MES, 2, 'left', '0'), '01', sep = '-'))) %>% 
-  gather(var, val, -ESTADO, -estado, -AÑO, -MES, -fecha) %>% 
-  filter(var == 'tasa') %>% 
+  gather(var, val, -estado_num, -estado, -AÑO, -MES, -fecha) %>% 
+  filter(var == 'm_decapitado') %>% 
   ggplot(aes(fecha, val)) +
   geom_line(aes(color = factor(estado))) +
   # labs(title = variable, x='', y='') +
   theme_light() +
   theme(legend.position = 'none')
+
+narco_mensual %<>% 
+  select(estado_num = ESTADO, estado, AÑO, MES, poblacion, EJ, tasa,
+         everything())
+
+
+write.csv(narco_mensual, 'datos/narco_mensual.csv', row.names = F)
