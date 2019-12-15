@@ -38,7 +38,7 @@ tabla3 <- readxl::read_excel('datos/completa/tabla3-EJECUCIONES.xlsx') %>%
   setNames(c('AÑO_ID', 'e_15_o_menos', 'e_15_a_20', 'e_20_a_30', 'e_30_a_50', 'e_50_o_mas'))
 
 
-tabla4 <- readxl::read_excel('datos/completa/tabla4-EJECUCIONES.xlsx')  %>% 
+tabla42 <- readxl::read_excel('datos/completa/tabla4-EJECUCIONES.xlsx')  %>% 
   setNames(c('AÑO_ID', 'WEAPON')) %>% 
   count(AÑO_ID) %>% 
   mutate(n = 1) %>% 
