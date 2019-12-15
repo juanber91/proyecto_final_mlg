@@ -5,6 +5,8 @@ model {
     tasa[i] ~ dgamma(a,b[i])
     b[i] <- a/mu[i]
     
+    #tasa[i] ~ dnorm(mu[i], tau)
+    
     log(mu[i]) <- 
           beta[1] +
           beta[2]  * TAX[i]  +
@@ -24,6 +26,8 @@ model {
   
   # Priors
   a~dgamma(0.1,0.1)
+  #for (i in 1:n) {tau[i] ~ dgamma(0.01,0.01)}
+  #tau ~ dgamma(0.01,0.01)
   
   #beta[1] ~ dnorm(0, 0.001) 
   for (i in 1:12) { beta[i] ~ dnorm(0, 0.001)  }

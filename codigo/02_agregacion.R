@@ -6,7 +6,7 @@ library(R2jags)
 
 # Población -----------------------------------------------------
 
-pob <- read.csv('datos/Proyeccion de Poblacion/Población por Municipio 2005 - 2011.csv', )
+pob <- read.csv('datos/Población por Municipio 2005 - 2011.csv', )
 pob %<>% 
   select(ESTADO = cve_ent, estado = nom_ent, cve_mun, contains('pob_ent')) %>% 
   mutate(ESTADO = as.character(ESTADO)) %>% 
