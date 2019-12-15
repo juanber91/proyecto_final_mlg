@@ -6,7 +6,7 @@ library(R2jags)
 
 # Población -----------------------------------------------------
 
-pob <- read.csv('datos/Población por Municipio 2005 - 2011.csv', )
+pob <- read.csv('datos/Proyeccion de Poblacion/Población por Municipio 2005 - 2011.csv', )
 pob %<>% 
   select(ESTADO = cve_ent, estado = nom_ent, cve_mun, contains('pob_ent')) %>% 
   mutate(ESTADO = as.character(ESTADO)) %>% 
@@ -67,8 +67,7 @@ plot_estados <- function(df, variable) {
     theme_light() +
     theme(legend.position = 'none')
   
-  ggsave(paste0('plots/',
-                variable, '.png'),
+  ggsave(paste0('plots/', variable, '.png'),
          width = 6, height = 4)
   
 }
@@ -77,8 +76,8 @@ map(names(estados)[-c(1,2)], ~plot_estados(estados, .))
 
 narco_mensual %>% 
   mutate(fecha = as.Date(paste(AÑO, str_pad(MES, 2, 'left', '0'), '01', sep = '-'))) %>% 
-  gather(var, val, -estado_num, -estado, -AÑO, -MES, -fecha) %>% 
-  filter(var == 'm_decapitado') %>% 
+  gather(var, val, -ESTADO, -estado, -AÑO, -MES, -fecha) %>% 
+  filter(var == 'tasa') %>% 
   ggplot(aes(fecha, val)) +
   geom_line(aes(color = factor(estado))) +
   # labs(title = variable, x='', y='') +
@@ -90,4 +89,4 @@ narco_mensual %<>%
          everything())
 
 
-write.csv(narco_mensual, 'datos/narco_mensual.csv', row.names = F)
+# write.csv(narco_mensual, 'datos/narco_mensual.csv', row.names = F)
