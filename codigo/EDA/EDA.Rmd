@@ -47,17 +47,23 @@ narco_mensual <- narco %>%
 ```{r pressure, echo=FALSE}
 hist1 <- narco_mensual %>% select(ESTADO, AÑO, EJ) %>% group_by(AÑO, ESTADO) %>%
   summarise(EJ = sum(EJ)) %>% merge(pob, by = c("ESTADO", "AÑO"))
-hist1 <- hist1 %>% transform(AÑO = as.integer(AÑO))
-ggplot(hist1, aes(x = log(poblacion), y = log(EJ), color = AÑO)) + geom_point() + ggtitle("Relación Población vs Ejecuciones por estado 2007 - 2011") + theme(plot.title = element_text(hjust = 0.5)) +  stat_smooth(method="lm", formula = y ~ x + I(x^2), alpha = 0.2, size = 0.5, color = "gray30")
+hist1 <- hist1 %>% transform(AÑO = as.factor(AÑO))
+ggplot(hist1, aes(x = log(poblacion), y = log(EJ), color = AÑO)) + geom_point() + scale_colour_brewer(palette = "Dark2") + ggtitle("Relación Población vs Ejecuciones por estado 2007 - 2011") + theme(plot.title = element_text(hjust = 0.5)) +  stat_smooth(method="lm", formula = y ~ x + I(x^2), alpha = 0.2, size = 0.5, color = "gray30")
 ```
   
 Se puede notar aquí que los estados con mayor población tienden a tener una mayor cantidad de ejecuciones, por lo que la variable a analizar será la tasas de ejecuciones por cada millón de habitantes por estado.
 
 ```{r, echo=FALSE}
 hist2 <- hist1 %>% mutate(tasa = EJ/poblacion*1000000)
-ggplot(hist2, aes(x = log(poblacion), y = log(tasa), color = AÑO)) + geom_point() + ggtitle("Relación Población vs tasa de ejecuciones por cada millón de habitantes por estado 2007 - 2011") + theme(plot.title = element_text(hjust = 0.5)) + theme(plot.title = element_text(size = 10)) +  stat_smooth(method="lm", formula = y ~ x + I(x^2), alpha = 0.2, size = 0.5, color = "gray30")
+ggplot(hist2, aes(x = log(poblacion), y = log(tasa), color = AÑO)) + geom_point() + scale_colour_brewer(palette = "Dark2") + ggtitle("Relación Población vs tasa de ejecuciones por cada millón de habitantes por estado 2007 - 2011") + theme(plot.title = element_text(hjust = 0.5)) + theme(plot.title = element_text(size = 10)) +  stat_smooth(method="lm", formula = y ~ x + I(x^2), alpha = 0.2, size = 0.5, color = "gray30")
 ```
 
 No hay una relación tan clara entre el tamaño de la población estatal y la tendencia en las tasas de ejecuciones por cada millón de habitantes.
-Por lo que se decidió que est avariable sea la que se modelará.
+Por lo que se decidió que esta avariable sea la que se modelará.
+
+Comenzando la evaluación frecuentista por año de la tasa de ejecución, se puede observar que al pasar de los años las tasas van siendo en promedio más altas a nivel estado, teniendo mayores varianzas y observaciones atípicas más severas.
+
+```{r}
+ggplot(hist2, aes(x=AÑO, y=tasa)) + geom_boxplot() + ggtitle("Distribución tasa estatal de ejecuciones por cada millón de habitantes por año") + theme(plot.title = element_text(size = 13)) + theme(plot.title = element_text(hjust = 0.5)) + ylim(c(0, 300))
+```
 
