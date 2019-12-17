@@ -117,7 +117,7 @@ El estilo de ejecución también se considera importante al contener implícitam
 
 
 
-```{r}
+```{r, echo= FALSE}
 tab <- narco_mensual %>% select(ESTADO, m_asfixiado, m_decapitado, m_arma_de_fuego, m_mutiliado, m_encobijado,    m_asfixiado, m_calcinado, m_foza, m_golpes, m_tortura, EJ) %>% 
   group_by(ESTADO) %>% merge(pob %>% select(ESTADO, estado) %>% unique()) %>% 
   filter(estado %in% top10$estado) %>% group_by(estado) %>% summarise(asfixiado = sum(m_asfixiado), 
@@ -139,4 +139,4 @@ ggplot(tab2, aes(x = estado, y = conteo)) + geom_col(aes(fill = tipo_ejecucion))
 
 Las ejecuciones con arma de fuego por mucho superan al total del resto.
 En cuanto al resto de formas de ejecución, de primera vista no existe una tendencia clara o comportamiento diferenciado en diferentes estados.
-Lo que sí puede apreciarse es la proporción congruente entre los estados con mayor número de ejecuciones.
+Lo que sí puede apreciarse es la proporción congruente entre los estados con mayor número de ejecuciones, con excepción de Tamaulipas donde proporcionalmente hay menos ejecuciones por arma de fuego.
