@@ -52,6 +52,8 @@ hist1 <- narco_mensual %>% select(ESTADO, AÑO, EJ) %>% group_by(AÑO, ESTADO) %
   summarise(EJ = sum(EJ)) %>% merge(pob, by = c("ESTADO", "AÑO"))
 hist1 <- hist1 %>% transform(AÑO = as.factor(AÑO))
 ggplot(hist1, aes(x = log(poblacion), y = log(EJ), color = AÑO)) + geom_point() + scale_colour_brewer(palette = "Dark2") + ggtitle("Relación Población vs Ejecuciones por estado 2007 - 2011") + theme(plot.title = element_text(hjust = 0.5)) +  stat_smooth(method="lm", formula = y ~ x + I(x^2), alpha = 0.2, size = 0.5, color = "gray30")
+
+
 ```
   
 Se puede notar aquí que los estados con mayor población tienden a tener una mayor cantidad de ejecuciones, por lo que la variable a analizar será la tasas de ejecuciones por cada millón de habitantes por estado.
@@ -96,10 +98,10 @@ for (i in 2007:2011){
 
 total <- hist2 %>% select(AÑO, estado, EJ) %>% group_by(AÑO) %>% 
   summarise(Ejecuciones_pais = sum(EJ))
-top5 <- top5 %>% select(AÑO, estado, EJ) %>% group_by(AÑO) %>% summarise(Ejecuciones_top5 = sum(EJ)) %>% 
+top5 <- top5 %>% select(AÑO, estado, EJ) %>% group_by(AÑO) %>% summarise(Ejecuciones_top5_edos = sum(EJ)) %>% 
     merge(total)
 
-top5['Proporcion'] <- top5$Ejecuciones_top5/top5$Ejecuciones_pais
+top5['Proporcion'] <- top5$Ejecuciones_top5_edos/top5$Ejecuciones_pais
 kable(top5) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
@@ -129,11 +131,11 @@ tab2 <- tab %>% gather(tipo_ejecucion, conteo, -estado) %>% filter(tipo_ejecucio
 
 ggplot(tab1, aes(x = estado, y = conteo)) + geom_col(aes(fill = tipo_ejecucion)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-  xlab("") + ggtitle("Tipos de Ejecución top 10 estados por año - Sin ejecución por arma de fuego")
+  xlab("") + ggtitle("Tipos de Ejecución top 15 estados por año - Sin ejecución por arma de fuego")
 
 ggplot(tab2, aes(x = estado, y = conteo)) + geom_col(aes(fill = tipo_ejecucion)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-  xlab("") + ggtitle("Ejecución por arma de fuego top 10 estados por año")
+  xlab("") + ggtitle("Ejecución por arma de fuego top 15 estados por año")
 
 ```
 
