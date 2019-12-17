@@ -56,7 +56,7 @@ ggplot(hist1, aes(x = log(poblacion), y = log(EJ), color = AÑO)) + geom_point()
   
 Se puede notar aquí que los estados con mayor población tienden a tener una mayor cantidad de ejecuciones, por lo que la variable a analizar será la tasas de ejecuciones por cada millón de habitantes por estado.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 hist2 <- hist1 %>% mutate(tasa = EJ/poblacion*1000000)
 ggplot(hist2, aes(x = log(poblacion), y = log(tasa), color = AÑO)) + geom_point() + scale_colour_brewer(palette = "Dark2") + ggtitle("Relación Población vs tasa de ejecuciones por cada millón de habitantes por estado 2007 - 2011") + theme(plot.title = element_text(hjust = 0.5)) + theme(plot.title = element_text(size = 10)) +  stat_smooth(method="lm", formula = y ~ x + I(x^2), alpha = 0.2, size = 0.5, color = "gray30")
 ```
@@ -80,12 +80,12 @@ for (i in 2007:2011){
 }
 
 top10 <- top10 %>% select(AÑO, estado, tasa)
-top10 %>% rpivotTable(rows = "estado", cols = "AÑO", vals = "tasa", width = 1000, height = 800, 
+top10 %>% rpivotTable(rows = "estado", cols = "AÑO", vals = "tasa", width = 1000, height = 700, 
             aggregatorName = "Sum", rendererName = "Col Heatmap")
 ```
 4 estados estuvieron durante los 5 años en el top 10 de estados con mayor tasa de ejecuciones por cada millón de habitantes: Chihuahua, Durango, Sinaloa, Guerrero. Morelos y Baja california aparecen en 4 de los 5 años.
 
-Reduciéndolo a un top 5 durante estos años:
+Reduciéndolo a un top 5 de estados con la mayor tasa de ejecuciones por año, se observa que más del 50% de las ejecuciones a nivel país sucedieron en esto estados año con año.
 
 ```{r, echo=FALSE}
 top5 <- data_frame()
@@ -102,11 +102,41 @@ top5 <- top5 %>% select(AÑO, estado, EJ) %>% group_by(AÑO) %>% summarise(Ejecu
 top5['Proporcion'] <- top5$Ejecuciones_top5/top5$Ejecuciones_pais
 kable(top5) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-
 ```
+En cuan to a las drogas involucradas en las ejecuciones, se hace la comparación año con año.
+
+
+```{r, echo=FALSE}
+tab <- narco_mensual %>% select(AÑO, EJ, d_cocaina, d_marihuana, d_otras_drogas) %>% group_by(AÑO) %>% 
+  summarise(EJ = sum(EJ), cocaina = sum(d_cocaina), marihuana = sum(d_marihuana), otras_drogas = sum(d_otras_drogas))
+kable(tab) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+El estilo de ejecución también se considera importante al contener implícitamente un mensaje, por ello se relacionará con el número de ejecuciones para el top 10 de estados.
+
 
 
 ```{r}
-total
+tab <- narco_mensual %>% select(ESTADO, m_asfixiado, m_decapitado, m_arma_de_fuego, m_mutiliado, m_encobijado,    m_asfixiado, m_calcinado, m_foza, m_golpes, m_tortura, EJ) %>% 
+  group_by(ESTADO) %>% merge(pob %>% select(ESTADO, estado) %>% unique()) %>% 
+  filter(estado %in% top10$estado) %>% group_by(estado) %>% summarise(asfixiado = sum(m_asfixiado), 
+    decapitado = sum(m_decapitado), arma_de_fuego = sum(m_arma_de_fuego), mutilado = sum(m_mutiliado), 
+    encobijado = sum(m_encobijado), calcinado = sum(m_calcinado), foza = sum(m_foza), golpes = sum(m_golpes))
+
+tab1 <- tab %>% gather(tipo_ejecucion, conteo, -estado) %>% filter(tipo_ejecucion != "arma_de_fuego")
+tab2 <- tab %>% gather(tipo_ejecucion, conteo, -estado) %>% filter(tipo_ejecucion == "arma_de_fuego")
+
+ggplot(tab1, aes(x = estado, y = conteo)) + geom_col(aes(fill = tipo_ejecucion)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  xlab("") + ggtitle("Tipos de Ejecución top 10 estados por año - Sin ejecución por arma de fuego")
+
+ggplot(tab2, aes(x = estado, y = conteo)) + geom_col(aes(fill = tipo_ejecucion)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  xlab("") + ggtitle("Ejecución por arma de fuego top 10 estados por año")
+
 ```
 
+Las ejecuciones con arma de fuego por mucho superan al total del resto.
+En cuanto al resto de formas de ejecución, de primera vista no existe una tendencia clara o comportamiento diferenciado en diferentes estados.
+Lo que sí puede apreciarse es la proporción congruente entre los estados con mayor número de ejecuciones.
