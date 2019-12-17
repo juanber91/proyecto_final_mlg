@@ -7,6 +7,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(rpivotTable) 
+library(knitr)
+library(kableExtra)
 knitr::opts_chunk$set(echo = TRUE, root.dir = "~/Documentos/RgrAvn/ProyectoFinal/proyecto_final_mlg")
 ```
 
@@ -63,7 +66,47 @@ Por lo que se decidió que esta avariable sea la que se modelará.
 
 Comenzando la evaluación frecuentista por año de la tasa de ejecución, se puede observar que al pasar de los años las tasas van siendo en promedio más altas a nivel estado, teniendo mayores varianzas y observaciones atípicas más severas.
 
-```{r}
+```{r, echo = FALSE}
 ggplot(hist2, aes(x=AÑO, y=tasa)) + geom_boxplot() + ggtitle("Distribución tasa estatal de ejecuciones por cada millón de habitantes por año") + theme(plot.title = element_text(size = 13)) + theme(plot.title = element_text(hjust = 0.5)) + ylim(c(0, 300))
+```
+
+El top 10 de estados con tasas de ejecuciones más altas por año son:
+
+```{r, echo = FALSE, warning=FALSE}
+top10 <- data_frame()
+for (i in 2007:2011){
+  aux <- hist2 %>% filter(AÑO == i) %>% arrange(desc(tasa))
+  top10 <- top10 %>% rbind(aux[1:10,])
+}
+
+top10 <- top10 %>% select(AÑO, estado, tasa)
+top10 %>% rpivotTable(rows = "estado", cols = "AÑO", vals = "tasa", width = 1000, height = 800, 
+            aggregatorName = "Sum", rendererName = "Col Heatmap")
+```
+4 estados estuvieron durante los 5 años en el top 10 de estados con mayor tasa de ejecuciones por cada millón de habitantes: Chihuahua, Durango, Sinaloa, Guerrero. Morelos y Baja california aparecen en 4 de los 5 años.
+
+Reduciéndolo a un top 5 durante estos años:
+
+```{r, echo=FALSE}
+top5 <- data_frame()
+for (i in 2007:2011){
+  aux <- hist2 %>% filter(AÑO == i) %>% arrange(desc(tasa))
+  top5 <- top5 %>% rbind(aux[1:5,])
+}
+
+total <- hist2 %>% select(AÑO, estado, EJ) %>% group_by(AÑO) %>% 
+  summarise(Ejecuciones_pais = sum(EJ))
+top5 <- top5 %>% select(AÑO, estado, EJ) %>% group_by(AÑO) %>% summarise(Ejecuciones_top5 = sum(EJ)) %>% 
+    merge(total)
+
+top5['Proporcion'] <- top5$Ejecuciones_top5/top5$Ejecuciones_pais
+kable(top5) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+```
+
+
+```{r}
+total
 ```
 
